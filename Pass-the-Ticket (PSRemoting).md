@@ -1,4 +1,4 @@
-# Pass-the-Ticket over PSRemoting
+# Pass-the-Ticket over PSRemoting using Invoke-Mimikatz
 
 ## ENVIRONMENT SET-UP:
 #### MACHINES:
@@ -20,7 +20,7 @@ BOSSMANBEN\\Administrator | MSEDGEWIN10 | Domain Administrator
 
 ## ASSUMPTIONS:
 #### i. WinRM is enabled on both local and remote machines
-1. Both machines IPs are listed in each others trustedhosts
+1. Both machines IPs are listed in each other's trustedhosts
 2. `-skipnetworkprofilecheck` is enabled (to allow connection over a public network)
 3. Proper firewall exceptions are in place in the remote machine
 #### ii. The remote machine is part of a Domain Controller ( __\\\\WIN-BO2CT95INDP__ )
